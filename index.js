@@ -23,6 +23,19 @@ const colourCodes = {
   'Black': '&0'
 }
 
+let botReplacement = '[BOT]'
+
+register("step", () => {
+  if (botReplacement != '[BOT]') {
+    if (botReplacement == 0) {
+      botReplacement = '[BOT]'
+    }
+    else {
+      botReplacement -= 1;
+    }
+  }
+}).setDelay(1);
+
 let lastMessage = null;
 register("messageSent", (message, event) => {
   lastMessage = message;
@@ -45,18 +58,24 @@ register("chat", (player) => {
 register("chat", (message, event) => {
   let send = false;
   if (message.includes(Settings.botName)) {
+    if (match = message.match(/Sorry (\S+), the pond is empty! Please wait (\d+) seconds to fish again./)) {
+      if (match[1] == Player.getName()) {
+        botReplacement = match[2];
+      }
+    }
     cancel(event);
-    message = message.replaceAll(Settings.botName, '&9[BOT]');
+    message = message.replaceAll(Settings.botName, '&9' + botReplacement + '&r');
     send = true;
   }
   for (player of data) {
     if (message.includes(player.username)) {
+      message = message.replace(/&r/g, "");
       if (player.prefix) {
         if (player.color) {
-          message = message.replaceAll(player.username, colourCodes[player.color] + player.prefix + ' ' + player.username);
+          message = message.replaceAll(player.username, colourCodes[player.color] + player.prefix + ' ' + player.username + '&r');
         }
         else {
-          message = message.replaceAll(player.username, player.prefix + ' ' + player.username);
+          message = message.replaceAll(player.username, player.prefix + ' ' + player.username + '&r');
         }
       }
       if (player.color) {
