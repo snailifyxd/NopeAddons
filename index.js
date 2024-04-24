@@ -122,6 +122,7 @@ register("step", () => {
 
 register("ItemTooltip", (tooltip, item, event) => {
   const lore = item.getLore();
+  let name = item.getName();
   let send = false;
   let lines = [];
   for (let line of lore) {
@@ -130,15 +131,17 @@ register("ItemTooltip", (tooltip, item, event) => {
         if (player.prefix) {
           if (player.color) {
             line = line.replaceAll(player.username, colourCodes[player.color] + player.prefix + ' ' + player.username);
+            name = name.replaceAll(player.username, colourCodes[player.color] + player.prefix + ' ' + player.username);
           }
           else {
             line = line.replaceAll(player.username, player.prefix + ' ' + player.username);
+            name = name.replaceAll(player.username, player.prefix + ' ' + player.username);
           }
         }
         if (player.color) {
           line = line.replaceAll(player.username, colourCodes[player.color] + player.username + '&r');
+          name = name.replaceAll(player.username, colourCodes[player.color] + player.username + '&r');
         }
-        cancel(event);
         send = true
       }
     }
@@ -148,6 +151,7 @@ register("ItemTooltip", (tooltip, item, event) => {
   if (send == true) {
     item.setLore(lines.join('\n'));
   }
+  item.setName(name);
 }) 
 
 
