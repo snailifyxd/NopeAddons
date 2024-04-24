@@ -58,6 +58,7 @@ register("chat", (player) => {
 register("chat", (message, event) => {
   let send = false;
   if (message.includes(Settings.botName)) {
+    message = message.replace(/&r/g, "");
     if (match = message.match(/Sorry (\S+), the pond is empty! Please wait (\d+) seconds to fish again./)) {
       if (match[1] == Player.getName()) {
         botReplacement = match[2];
