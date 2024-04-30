@@ -91,13 +91,13 @@ register("chat", (message, event) => {
   }
 }).setCriteria("&r${message}");
 
-register("step", () => {
+register("WorldLoad", () => {
   if (data) {
     World.getAllPlayers().forEach((player) => {
-      let username = player.name;
+      let username = player.getDisplayName().text;
       let send = false;
       for (user of data) {
-        if (username.includes(user.username)) {
+        if (username.includes(user.username) && !username.includes(user.prefix)) {
           if (user.prefix) {
             if (user.color) {
               username = username.replaceAll(user.username, colourCodes[user.color] + user.prefix + ' ' + user.username);
@@ -110,12 +110,11 @@ register("step", () => {
             username = username.replaceAll(user.username, colourCodes[user.color] + user.username + '&r');
           }
           send = true
+          player.setTabDisplayName(new TextComponent(username));
+      	  player.setNametagName(new TextComponent(username));
+          return;
         }
       }
-    if (send == true) {
-      player.setTabDisplayName(new TextComponent(username));
-      player.setNametagName(new TextComponent(username));
-    }
     });
   }
 })
