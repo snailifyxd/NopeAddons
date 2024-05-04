@@ -91,68 +91,37 @@ register("chat", (message, event) => {
   }
 }).setCriteria("&r${message}");
 
-register("WorldLoad", () => {
+register("step", () => {
   if (data) {
-    World.getAllPlayers().forEach((player) => {
-      let username = player.getDisplayName().text;
-      let send = false;
-      for (user of data) {
-        if (username.includes(user.username) && !username.includes(user.prefix)) {
-          if (user.prefix) {
+    setTimeout(() => {
+      World.getAllPlayers().forEach((player) => {
+        let nametag = player.getName();
+        let tablist = player.getDisplayName().text;
+        for (user of data) {
+          if (nametag.includes(user.username) && !nametag.includes(user.prefix) && !tablist.includes(user.prefix) && !nametag.includes(colourCodes[user.color]) && !tablist.includes(colourCodes[user.color])) {
+            if (user.prefix) {
+              if (user.color) {
+                nametag = nametag.replaceAll(user.username, colourCodes[user.color] + user.prefix + ' ' + user.username);
+                tablist = tablist.replaceAll(user.username, colourCodes[user.color] + user.prefix + ' ' + user.username);
+              }
+              else {
+                nametag = nametag.replaceAll(user.username, user.prefix + ' ' + user.username);
+                tablist = tablist.replaceAll(user.username, user.prefix + ' ' + user.username);
+              }
+            }
             if (user.color) {
-              username = username.replaceAll(user.username, colourCodes[user.color] + user.prefix + ' ' + user.username);
+              nametag = nametag.replaceAll(user.username, colourCodes[user.color] + user.username + '&r');
+              tablist = tablist.replaceAll(user.username, colourCodes[user.color] + user.username + '&r');
             }
-            else {
-              username = username.replaceAll(user.username, user.prefix + ' ' + user.username);
-            }
+            player.setTabDisplayName(new TextComponent(tablist));
+            player.setNametagName(new TextComponent(nametag));
+            return;
           }
-          if (user.color) {
-            username = username.replaceAll(user.username, colourCodes[user.color] + user.username + '&r');
-          }
-          send = true
-          player.setTabDisplayName(new TextComponent(username));
-      	  player.setNametagName(new TextComponent(username));
-          return;
         }
-      }
-    });
+      });
+    }, 10 * 1000);
   }
 })
-
-register("ItemTooltip", (tooltip, item, event) => {
-  const lore = item.getLore();
-  let name = item.getName();
-  let send = false;
-  let lines = [];
-  for (let line of lore) {
-    for (player of data) {
-      if (line.includes(player.username) && !line.includes(player.prefix)) {
-        if (player.prefix) {
-          if (player.color) {
-            line = line.replaceAll(player.username, colourCodes[player.color] + player.prefix + ' ' + player.username);
-            name = name.replaceAll(player.username, colourCodes[player.color] + player.prefix + ' ' + player.username);
-          }
-          else {
-            line = line.replaceAll(player.username, player.prefix + ' ' + player.username);
-            name = name.replaceAll(player.username, player.prefix + ' ' + player.username);
-          }
-        }
-        if (player.color) {
-          line = line.replaceAll(player.username, colourCodes[player.color] + player.username + '&r');
-          name = name.replaceAll(player.username, colourCodes[player.color] + player.username + '&r');
-        }
-        send = true
-      }
-    }
-    lines.push(line);
-  }
-  lines.shift();
-  if (send == true) {
-    item.setLore(lines.join('\n'));
-  }
-  item.setName(name);
-}) 
-
 
 register("command", () => {
   Settings.openGUI();
